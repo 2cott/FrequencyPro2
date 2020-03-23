@@ -3,11 +3,23 @@ package main
 import (
 	"fmt"
 	"strings"
-
 	"github.com/rucuriousyet/monolog"
 )
 
 func main() {
+	positions := map[string]int{
+		"0": 1,
+		"1": 2,
+		"2": 4,
+		"3": 8,
+		"4": 16,
+		"5": 32,
+		"6": 64,
+		"7": 128,
+		"8": 256,
+		"9": 512,
+	}
+
 	notes := map[string]float32{
 		"a":       27.5,
 		"a#":      29.14,
@@ -46,16 +58,26 @@ func main() {
 		"a flat":  51.91,
 	}
 
+	var Frequency float32
+
 	callbackFunc := func(p *monolog.Prompter) monolog.Cmd {
 		p.Write("Type a note name (result will print in Hertz): ")
 		input := p.Read()
 		letter := strings.ToLower(input)
 
-		fmt.Println(notes[letter])
+		Frequency = notes[letter]
 		return monolog.Continue
 	}
 
-	err := monolog.New(nil, nil).Add(callbackFunc).Do()
+	callbackFunc2 := func(p *monolog.Prompter) monolog.Cmd {
+		p.Write("Which octave? (type 0-9): ")
+		input := p.Read()
+		position := strings.ToLower(input)
+
+		fmt.Println(Frequency * float32(positions[position]))
+		return monolog.Continue
+	}
+	err := monolog.New(nil, nil).Add(callbackFunc).Add(callbackFunc2).Do()
 	if err != nil {
 		panic(err)
 	}
@@ -78,6 +100,7 @@ P7 = P1 * 64
 P8 = P1 * 128
 P9 = P1 * 256
 
+for example..
 */
 //oct := []int{2, 6, 7, 8, 9, 0, 1}
 
